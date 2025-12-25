@@ -1,0 +1,111 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: aigenius-ticketing
+  labels:
+    app: aigenius-ticketing
+    version: v1
+spec:
+  replicas: 2
+  selector:
+    matchLabels:
+      app: aigenius-ticketing
+  template:
+    metadata:
+      labels:
+        app: aigenius-ticketing
+        version: v1
+    spec:
+      containers:
+      - name: aigenius-ticketing
+        image: your-registry/aigenius-ticketing:latest
+        imagePullPolicy: Always
+        ports:
+        - containerPort: 8000
+          name: http
+          protocol: TCP
+        env:
+        - name: APP_NAME
+          value: "aigenius-ticketing"
+        - name: APP_VERSION
+          value: "1.0.0"
+        - name: ENVIRONMENT
+          value: "production"
+        - name: HOST
+          value: "0.0.0.0"
+        - name: PORT
+          value: "8000"
+        - name: PYTHONUNBUFFERED
+          value: "1"
+        - name: DATABASE_URL
+          valueFrom:
+            secretKeyRef:
+              name: aigenius-secrets
+              key: database-url
+        - name: ZAI_API_KEY
+          valueFrom:
+            secretKeyRef:
+              name: aigenius-secrets
+              key: zai-api-key
+        - name: GRAFANA_HOST
+          value: "https://otlp-gateway-prod-ap-south-1.grafana.net/otlp/v1/metrics"
+        - name: GRAFANA_API_KEY
+          valueFrom:
+            secretKeyRef:
+              name: aigenius-secrets
+              key: grafana-api-key
+        - name: GRAFANA_INSTANCE_ID
+          valueFrom:
+            secretKeyRef:
+              name: aigenius-secrets
+              key: grafana-instance-id
+        - name: SLACK_WEBHOOK_URL
+          valueFrom:
+            secretKeyRef:
+              name: aigenius-secrets
+              key: slack-webhook-url
+        - name: SLACK_CHANNEL
+          value: "#all-customer-tickets"
+        - name: SLA_CONFIG_PATH
+          value: "/app/sla_config.yaml"
+        - name: SLA_EVALUATION_INTERVAL
+          value: "60"
+        - name: LLM_MODEL
+          value: "glm-4.7"
+        - name: EMBEDDING_MODEL
+          value: "embedding-2"
+        - name: EMBEDDING_DIMENSION
+          value: "1024"
+        - name: CORS_ORIGINS
+          value: '["https://your-frontend-domain.com"]'
+        resources:
+          requests:
+            memory: "256Mi"
+            cpu: "250m"
+          limits:
+            memory: "1Gi"
+            cpu: "1000m"
+        livenessProbe:
+          httpGet:
+            path: /health
+            port: 8000
+          initialDelaySeconds: 30
+          periodSeconds: 10
+          timeoutSeconds: 5
+          failureThreshold: 3
+        readinessProbe:
+          httpGet:
+            path: /health
+            port: 8000
+          initialDelaySeconds: 10
+          periodSeconds: 5
+          timeoutSeconds: 3
+          failureThreshold: 3
+        volumeMounts:
+        - name: sla-config
+          mountPath: /app/sla_config.yaml
+          subPath: sla_config.yaml
+      volumes:
+      - name: sla-config
+        configMap:
+          name: sla-config

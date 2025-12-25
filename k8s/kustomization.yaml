@@ -1,0 +1,27 @@
+apiVersion: kustomize.config.k8s.io/v1beta1
+kind: Kustomization
+
+namespace: aigenius
+
+resources:
+  - deployment.yaml
+  - service.yaml
+  - configmap.yaml
+  - ingress.yaml
+  - hpa.yaml
+
+# Secret generator (creates from secrets file)
+# secretGenerator:
+# - name: aigenius-secrets
+#   type: Opaque
+#   envs:
+#   - .env.secrets
+
+images:
+  - name: your-registry/aigenius-ticketing
+    newTag: latest
+
+# Common labels applied to all resources
+commonLabels:
+  app: aigenius-ticketing
+  environment: production

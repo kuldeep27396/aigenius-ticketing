@@ -1,0 +1,38 @@
+# SLA Configuration
+# This file defines service level targets for different priorities and customer tiers
+
+sla_targets:
+  critical:
+    response: 15      # 15 minutes for first response
+    resolution: 240   # 4 hours for full resolution
+  high:
+    response: 60      # 1 hour for first response
+    resolution: 480   # 8 hours for full resolution
+  medium:
+    response: 240     # 4 hours for first response
+    resolution: 1440  # 24 hours for full resolution
+  low:
+    response: 480     # 8 hours for first response
+    resolution: 2880  # 48 hours for full resolution
+
+# Customer tier multipliers
+# Lower multiplier = faster SLA (higher priority customer)
+customer_tier_multipliers:
+  enterprise: 0.5    # 50% of base SLA time
+  business: 0.75     # 75% of base SLA time
+  standard: 1.0      # Standard SLA time
+  free: 1.5          # 150% of base SLA time
+
+# Escalation thresholds (percentage of remaining time)
+escalation_thresholds:
+  warning: 15        # Alert when 15% time remains
+  breach: 0          # Breach at 0% remaining
+
+# Escalation levels and notification channels
+escalation_levels:
+  - level: 1
+    notify: ["#support-alerts"]
+  - level: 2
+    notify: ["#support-alerts", "#support-managers"]
+  - level: 3
+    notify: ["#support-alerts", "#support-managers", "#escalations"]
