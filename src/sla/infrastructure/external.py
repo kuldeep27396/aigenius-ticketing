@@ -91,23 +91,45 @@ class SLAConfigManager:
             return False
 
     def start_watching(self) -> None:
-        """Start watching configuration file for changes."""
+        """
+        Start watching configuration file for changes.
+
+        Skips watching if:
+        - File doesn't exist (production environments often use env vars)
+        - Running in a containerized environment where inotify doesn't work
+        """
         if self._path is None:
             raise RuntimeError("Config not loaded. Call load() first.")
 
-        self._observer = Observer()
-        handler = ConfigFileHandler(self, self._path)
-        self._observer.schedule(
-            handler,
-            str(self._path.parent),
-            recursive=False
-        )
-        self._observer.start()
-        logger.info(f"Started watching config file: {self._path}")
+        # Skip file watching if the config file doesn't exist
+        # Production environments typically use environment variables
+        if not self._path.exists():
+            logger.info(
+                f"Config file doesn't exist, skipping file watch: {self._path}. "
+                "Using default SLA configuration."
+            )
+            return
+
+        try:
+            self._observer = Observer()
+            handler = ConfigFileHandler(self, self._path)
+            self._observer.schedule(
+                handler,
+                str(self._path.parent),
+                recursive=False
+            )
+            self._observer.start()
+            logger.info(f"Started watching config file: {self._path}")
+        except (OSError, FileNotFoundError) as e:
+            # File watching not supported (e.g., in Docker containers)
+            logger.warning(
+                f"File watching not available, using static config: {e}"
+            )
+            self._observer = None
 
     def stop_watching(self) -> None:
-        """Stop watching configuration file."""
-        if self._observer:
+        """Stop watching configuration file (safe to call even if not watching)."""
+        if self._observer is not None:
             self._observer.stop()
             self._observer.join(timeout=5)
             self._observer = None
