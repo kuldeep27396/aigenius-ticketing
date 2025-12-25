@@ -12,9 +12,10 @@ from typing import List, Any
 from dataclasses import dataclass
 
 from src.triage.application import IVectorStore, ILLMClient
-from src.infrastructure.llm import ZAIILLMClient, EmbeddingResult, ChatCompletionResult
+from src.infrastructure.llm import GroqLLMClient, OpenAILLMClient, ZAIILLMClient, EmbeddingResult, ChatCompletionResult
 from src.infrastructure.vectorstore import MilvusVectorStore, SearchResult, Document
 from src.core import LLMException, VectorStoreException
+from src.config import settings
 
 
 class LLMClientAdapter(ILLMClient):
@@ -22,11 +23,19 @@ class LLMClientAdapter(ILLMClient):
     Adapter that wraps the infrastructure LLM client.
 
     Implements the application layer ILLMClient interface using
-    the infrastructure layer ZAIILLMClient.
+    the infrastructure layer GroqLLMClient, OpenAILLMClient, or ZAIILLMClient.
     """
 
     def __init__(self, api_key: str | None = None):
-        self._client = ZAIILLMClient(api_key)
+        # Try Groq first (fastest, free), then OpenAI, then Z.AI
+        if settings.groq_api_key or api_key:
+            self._client = GroqLLMClient(api_key or settings.groq_api_key)
+        elif settings.openai_api_key:
+            self._client = OpenAILLMClient(settings.openai_api_key)
+        elif settings.zai_api_key:
+            self._client = ZAIILLMClient(api_key or settings.zai_api_key)
+        else:
+            raise LLMException("No LLM API key configured (set GROQ_API_KEY, OPENAI_API_KEY, or ZAI_API_KEY)")
 
     async def chat_completion(
         self,

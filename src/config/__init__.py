@@ -64,10 +64,18 @@ class Settings(BaseSettings):
         le=30
     )
 
-    # ========== Z.AI SDK (GLM 4.7) ==========
+    # ========== LLM Configuration ==========
+    groq_api_key: Optional[str] = Field(
+        default=None,
+        description="Groq API key (OpenAI-compatible, fast & free)"
+    )
+    openai_api_key: Optional[str] = Field(
+        default=None,
+        description="OpenAI API key"
+    )
     zai_api_key: Optional[str] = Field(
         default=None,
-        description="Z.AI API key for GLM 4.7"
+        description="Z.AI API key for GLM 4.7 (deprecated, use Groq)"
     )
     mock_llm: bool = Field(
         default=False,

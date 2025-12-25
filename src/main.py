@@ -133,7 +133,21 @@ async def lifespan(app: FastAPI) -> AsyncGenerator:
     # Initialize LLM client
     logger.info("Initializing LLM client")
     try:
-        llm_client = ZAIILLMClient(settings.zai_api_key)
+        from src.infrastructure.llm import GroqLLMClient, OpenAILLMClient, ZAIILLMClient
+
+        # Try Groq first (fastest, free), then OpenAI, then Z.AI
+        if settings.groq_api_key:
+            llm_client = GroqLLMClient(settings.groq_api_key)
+            logger.info(f"Using Groq with model: {settings.llm_model}")
+        elif settings.openai_api_key:
+            llm_client = OpenAILLMClient(settings.openai_api_key)
+            logger.info(f"Using OpenAI with model: {settings.llm_model}")
+        elif settings.zai_api_key:
+            llm_client = ZAIILLMClient(settings.zai_api_key)
+            logger.info(f"Using Z.AI with model: {settings.llm_model}")
+        else:
+            llm_client = None
+            logger.warning("No LLM API key configured")
     except Exception as e:
         logger.warning(f"LLM client initialization failed: {e}")
         llm_client = None
