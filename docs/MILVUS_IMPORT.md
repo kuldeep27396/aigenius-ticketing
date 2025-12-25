@@ -2,96 +2,71 @@
 
 This guide shows how to import documentation into Milvus/Zilliz Cloud for RAG-based response generation.
 
-## Method 1: Zilliz Cloud UI (Recommended)
+## Quick Start: Using sentence-transformers (Free)
 
-**Steps:**
+**Note:** Zilliz Cloud UI import requires a `vector` field. The easiest method is to generate embeddings locally using the free `sentence-transformers` library.
 
-1. Go to your Zilliz Cloud cluster: https://cloud.zilliz.com
-
-2. Navigate to your collection `tickets_docs`
-
-3. Click **Import Data** → **JSON Import**
-
-4. Upload `docs/milvus_ui_import.json`
-
-5. **Enable Auto-Generated Embeddings** (Zilliz will create vectors automatically)
-
-6. Map fields:
-   - `doc_id` → Primary Key (String)
-   - `text` → Vector Field (enable embedding)
-   - `title` → Scalar Field
-   - `category` → Scalar Field
-   - `url` → Scalar Field
-   - `tags` → Scalar Field (Array)
-   - `updated_at` → Scalar Field
-
-7. Click **Import**
-
-## Method 2: REST API (Requires Embeddings)
-
-If you want to use the API directly, you first need to generate embeddings.
-
-### Prerequisites
+### Step 1: Install Dependencies
 
 ```bash
-# Option A: Use OpenAI embeddings (requires API key with quota)
-export OPENAI_API_KEY=your-key-here
-
-# Option B: Use local sentence-transformers (free)
 pip install sentence-transformers
 ```
 
-### Using sentence-transformers (Free)
+### Step 2: Generate Embeddings
 
-```python
-from sentence_transformers import SentenceTransformer
-import json
+Run the provided script:
 
-# Load model (768 dimensions)
-model = SentenceTransformer('all-MiniLM-L6-v2')
-
-# Load documents
-with open('docs/milvus_ui_import.json') as f:
-    docs = json.load(f)
-
-# Generate embeddings
-data = []
-for i, doc in enumerate(docs):
-    vector = model.encode(doc['text']).tolist()
-    data.append({
-        "primary_key": i + 1,
-        "vector": vector,
-        "text": doc['text'],
-        "doc_id": doc['doc_id'],
-        "title": doc['title'],
-        "category": doc['category'],
-        "url": doc['url'],
-        "tags": doc['tags'],
-        "updated_at": doc['updated_at']
-    })
-
-# Save for import
-with open('docs/milvus_with_embeddings.json', 'w') as f:
-    json.dump(data, f)
-
-print(f"Generated {len(data)} documents with 768-dim embeddings")
+```bash
+python scripts/generate_milvus_import.py
 ```
 
-### Push to Milvus via API
+This will:
+- Load documents from `docs/milvus_ui_import.json`
+- Generate 768-dimensional embeddings using `all-MiniLM-L6-v2`
+- Save to `docs/milvus_with_embeddings.json`
+
+### Step 3: Import via REST API
 
 ```bash
 # Set your credentials
 export MILVUS_ENDPOINT="https://in03-2f74f35669a52a3.serverless.gcp-us-west1.cloud.zilliz.com"
 export MILVIZ_API_KEY="your-api-key"
 
-# Import data
+# Import all data
 curl --request POST \
   --url "$MILVUS_ENDPOINT/v2/vectordb/entities/insert" \
   --header "Accept: application/json" \
   --header "Authorization: Bearer $MILVIZ_API_KEY" \
   --header "Content-Type: application/json" \
-  --data @docs/milvus_with_embeddings.json
+  --data '{"collectionName":"tickets_docs","data":[]}'  # Empty first to create structure
 ```
+
+Actually, for bulk import, it's better to use the generated file:
+
+```bash
+# Import with embeddings
+curl --request POST \
+  --url "$MILVUS_ENDPOINT/v2/vectordb/entities/insert" \
+  --header "Accept: application/json" \
+  --header "Authorization: Bearer $MILVIZ_API_KEY" \
+  --header "Content-Type: application/json" \
+  -d @docs/milvus_with_embeddings.json
+```
+
+## Alternative: Manual Import via Zilliz UI
+
+If you prefer using the Zilliz Cloud UI:
+
+1. Go to https://cloud.zilliz.com
+2. Navigate to your collection `tickets_docs`
+3. Click **Insert Data**
+4. Manually add records with:
+   - `primary_key`: Integer (1, 2, 3, ...)
+   - `vector`: [float array - 768 dimensions]
+   - `text`: Document content
+   - `title`, `category`, `url`, `tags`, `updated_at`
+
+**Note:** You'll need to generate vectors separately using the script above.
 
 ## Verify Import
 
@@ -104,7 +79,7 @@ curl --request POST \
   --header "Content-Type: application/json" \
   --data '{
     "collectionName": "tickets_docs",
-    "outputFields": ["doc_id", "title", "category"]
+    "outputFields": ["primary_key", "title", "category"]
   }'
 ```
 

@@ -1,6 +1,6 @@
 [
   {
-    "doc_id": "doc_001",
+    "primary_key": 1,
     "text": "CASB (Cloud Access Security Broker) Configuration Guide\n\nCASB provides visibility and control over cloud applications. To configure CASB for Salesforce integration:\n\n1. Navigate to Settings > CASB > Salesforce\n2. Enter your Salesforce credentials (username and security token)\n3. Configure sync preferences (real-time or scheduled)\n4. Select the data objects to sync (Accounts, Contacts, Opportunities)\n5. Test the connection using the Test Connection button\n6. Save and activate the configuration\n\nTroubleshooting:\n- If sync fails, check API permissions in Salesforce\n- Verify the security token is valid\n- Ensure network connectivity between your environment and Salesforce API\n- Common error codes: AUTH_FAILURE, PERMISSION_DENIED",
     "title": "CASB Salesforce Integration Guide",
     "category": "CASB",
@@ -9,7 +9,7 @@
     "updated_at": "2024-12-01"
   },
   {
-    "doc_id": "doc_002",
+    "primary_key": 2,
     "text": "SWG (Secure Web Gateway) Policy Configuration\n\nSecure Web Gateway filters web traffic based on configured policies. To create a new policy:\n\n1. Go to Policies > Web Policy\n2. Click Create New Policy\n3. Select policy type (Allow, Block, Monitor, Warn)\n4. Define URL patterns or categories:\n   - Use wildcards: *.example.com\n   - Select from pre-defined categories (Social Media, Malware, Phishing)\n5. Configure time schedules (business hours, after hours)\n6. Apply to user groups or individual users\n7. Enable DNS filtering if required\n8. Save and deploy the policy\n\nPolicy priority: More specific rules take precedence over general rules. User-level policies override group policies.",
     "title": "SWG Policy Configuration Guide",
     "category": "SWG",
@@ -18,7 +18,7 @@
     "updated_at": "2024-12-01"
   },
   {
-    "doc_id": "doc_003",
+    "primary_key": 3,
     "text": "ZTNA (Zero Trust Network Access) Setup\n\nZero Trust Network Access provides secure remote access to internal applications without VPN. Configuration steps:\n\n1. Navigate to ZTNA > Applications\n2. Click Add Application\n3. Define application properties:\n   - Application name and description\n   - Destination (hostname/IP and port)\n   - Protocol (HTTP, HTTPS, SSH, RDP)\n4. Configure access controls:\n   - Select user groups who can access\n   - Set time-based access policies\n   - Enable MFA if required\n5. Configure client access:\n   - Download ZTNA client for end users\n   - Configure client settings (split tunneling, etc.)\n6. Test the access from a client device\n\nSupported protocols: HTTPS (443), SSH (22), RDP (3389), MySQL (3306), PostgreSQL (5432)",
     "title": "ZTNA Application Setup Guide",
     "category": "ZTNA",
@@ -27,7 +27,7 @@
     "updated_at": "2024-12-01"
   },
   {
-    "doc_id": "doc_004",
+    "primary_key": 4,
     "text": "DLP (Data Loss Prevention) Rule Configuration\n\nData Loss Prevention helps prevent sensitive data from leaving your organization. To create DLP rules:\n\n1. Go to DLP > Rules\n2. Click Create Rule\n3. Define data patterns:\n   - Pre-built patterns: Credit Card, SSN, Bank Account\n   - Custom regex patterns for specific data\n   - Exact match for keywords\n4. Set detection conditions:\n   - File type (documents, spreadsheets, images)\n   - File size limits\n   - Direction (upload, download, both)\n5. Configure actions:\n   - Alert only\n   - Block transfer\n   - Quarantine file\n6. Apply to channels:\n   - Email attachments\n   - Web uploads\n   - Cloud storage sync\n   - Removable media\n7. Save and enable the rule\n\nTest rules using the DLP simulation tool before deploying to production.",
     "title": "DLP Rule Configuration Guide",
     "category": "DLP",
@@ -36,7 +36,7 @@
     "updated_at": "2024-12-01"
   },
   {
-    "doc_id": "doc_005",
+    "primary_key": 5,
     "text": "SSPM (SaaS Security Posture Management) Integration\n\nSaaS Security Posture Management monitors and secures your SaaS applications. Supported integrations:\n\n1. Office 365 / Microsoft 365\n2. Google Workspace (G Suite)\n3. Salesforce\n4. Box\n5. Dropbox\n6. Slack\n\nIntegration steps:\n1. Navigate to SSPM > Integrations\n2. Select the SaaS application\n3. Configure API access:\n   - For OAuth apps: Authorize with admin credentials\n   - For API key apps: Generate and paste API key\n4. Select security checks to enable:\n   - User permission audits\n   - Data sharing policies\n   - MFA configuration\n   - Retention policies\n5. Set assessment schedule (daily, weekly)\n6. Save and run initial assessment\n\nReview findings in the SSPM dashboard and remediate security issues.",
     "title": "SSPM Integration Guide",
     "category": "SSPM",
@@ -45,7 +45,7 @@
     "updated_at": "2024-12-01"
   },
   {
-    "doc_id": "doc_006",
+    "primary_key": 6,
     "text": "CFW (Cloud Firewall) Rule Management\n\nCloud Firewall filters network traffic based on configured rules. Rule management:\n\n1. Navigate to Firewall > Rules\n2. Create new rule\n3. Define rule parameters:\n   - Source: IP, CIDR, or any\n   - Destination: IP, CIDR, or any\n   - Port: Single port or range\n   - Protocol: TCP, UDP, or any\n4. Select action:\n   - Allow: Permit traffic\n   - Deny: Block traffic\n   - Reject: Block with RST response\n5. Configure logging:\n   - Enable access logs\n   - Set log retention period\n6. Add optional conditions:\n   - Time-based schedules\n   - GeoIP filtering\n   - Application layer inspection\n7. Review and activate\n\nRules are evaluated in order (top to bottom). More specific rules should be placed before general rules.",
     "title": "CFW Rule Management Guide",
     "category": "CFW",
@@ -54,7 +54,7 @@
     "updated_at": "2024-12-01"
   },
   {
-    "doc_id": "doc_007",
+    "primary_key": 7,
     "text": "Troubleshooting CASB Sync Issues\n\nCommon CASB sync problems and solutions:\n\n1. Sync not starting:\n   - Verify API credentials are correct\n   - Check Salesforce API limits (not exceeded)\n   - Ensure CASB service account has proper permissions\n   - Review sync schedule configuration\n\n2. Partial data sync:\n   - Check for excluded fields in object mapping\n   - Verify field-level security settings in Salesforce\n   - Review API call logs for failed records\n\n3. Slow sync performance:\n   - Reduce batch size in sync settings\n   - Schedule syncs during off-peak hours\n   - Check network bandwidth and latency\n   - Consider incremental sync instead of full sync\n\n4. Authentication errors:\n   - Regenerate security token in Salesforce\n   - Update password in CASB configuration\n   - Verify connected app status in Salesforce\n\nError codes reference:\n- INVALID_AUTH: Check credentials\n- RATE_LIMIT_EXCEEDED: Reduce sync frequency\n- PERMISSION_DENIED: Review API permissions",
     "title": "CASB Sync Troubleshooting",
     "category": "CASB",
@@ -63,7 +63,7 @@
     "updated_at": "2024-12-01"
   },
   {
-    "doc_id": "doc_008",
+    "primary_key": 8,
     "text": "SWG False Positive Management\n\nWhen legitimate websites are incorrectly blocked, follow these steps:\n\n1. Identify the blocked URL and policy that caused the block\n2. Review the URL categorization:\n   - Check if site is miscategorized\n   - Request recategorization from vendor\n3. Create an exception:\n   - Go to Policies > Exceptions\n   - Add the URL or domain\n   - Set scope (individual user, group, or global)\n   - Set expiration (permanent or temporary)\n4. Or modify the policy:\n   - Edit the blocking policy\n   - Add the URL to allowlist\n   - Save and redeploy\n5. Verify access:\n   - Test the URL from affected user's browser\n   - Check access logs to confirm exception is working\n\nBest practices:\n- Use specific URLs over wildcards when possible\n- Review exceptions quarterly and remove unused ones\n- Document business justification for each exception",
     "title": "SWG False Positive Guide",
     "category": "SWG",
@@ -72,7 +72,7 @@
     "updated_at": "2024-12-01"
   },
   {
-    "doc_id": "doc_009",
+    "primary_key": 9,
     "text": "ZTNA Connection Issues\n\nCommon ZTNA connection problems and solutions:\n\n1. Unable to connect to application:\n   - Verify application is online and accessible\n   - Check if destination server is blocking ZTNA IPs\n   - Ensure firewall rules allow ZTNA traffic\n   - Verify port and protocol are correctly configured\n\n2. Authentication failures:\n   - Confirm user has permission to access the application\n   - Check if MFA is working correctly\n   - Verify SSO authentication is properly configured\n   - Review user group memberships\n\n3. Slow connection performance:\n   - Check network latency to destination\n   - Verify ZTNA service region is closest to users\n   - Review bandwidth utilization\n   - Consider enabling split tunneling for non-critical traffic\n\n4. Client software issues:\n   - Update ZTNA client to latest version\n   - Clear client cache and cookies\n   - Reinstall ZTNA client if problems persist\n   - Check OS compatibility and requirements\n\nStatus codes:\n- CONNECTION_REFUSED: Destination may be down\n- TIMEOUT: Network connectivity issue\n- AUTH_REQUIRED: User not authenticated",
     "title": "ZTNA Connection Troubleshooting",
     "category": "ZTNA",
@@ -81,7 +81,7 @@
     "updated_at": "2024-12-01"
   },
   {
-    "doc_id": "doc_010",
+    "primary_key": 10,
     "text": "DLP False Positive Tuning\n\nOptimize DLP rules to reduce false positives while maintaining security:\n\n1. Analyze false positive patterns:\n   - Review blocked content logs\n   - Identify common false positive triggers\n   - Categorize by data type and context\n\n2. Rule refinement strategies:\n   - Add contextual conditions (department, user role)\n   - Use AND combinations for multiple patterns\n   - Set minimum confidence thresholds\n   - Exclude specific file types or locations\n\n3. Testing and validation:\n   - Use DLP simulation mode with sample data\n   - Test against known legitimate content\n   - Measure false positive rate before and after\n   - Gradually deploy to pilot group first\n\n4. Ongoing monitoring:\n   - Review blocked content weekly\n   - Create exception list for confirmed false positives\n   - Update rule patterns as business evolves\n   - Track metrics: precision, recall, false positive rate\n\n5. User education:\n   - Train users on data handling best practices\n   - Provide guidance on naming files appropriately\n   - Create process for requesting rule exceptions",
     "title": "DLP False Positive Tuning",
     "category": "DLP",
