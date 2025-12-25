@@ -69,6 +69,10 @@ class Settings(BaseSettings):
         default=None,
         description="Z.AI API key for GLM 4.7"
     )
+    mock_llm: bool = Field(
+        default=False,
+        description="Use mock LLM responses for testing (no API calls)"
+    )
 
     # ========== Zilliz Cloud (Managed Milvus) Configuration ==========
     zilliz_uri: str = Field(

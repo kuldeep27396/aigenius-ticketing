@@ -199,11 +199,39 @@ class MockLLMClient(ILLMClient):
         max_tokens: int = 1000,
         operation: str = "chat_completion"
     ) -> ChatCompletionResult:
-        """Return mock response."""
+        """Return mock response based on operation type."""
+
+        # Check if this is a classification request
+        user_content = str(messages[-1].get("content", "")) if messages else ""
+
+        if "classification" in operation.lower() or "classify" in operation.lower() or "product" in user_content.lower():
+            # Mock classification response
+            import json
+            mock_response = {
+                "product": "CASB",
+                "urgency": "high",
+                "confidence": 0.92,
+                "reasoning": "Mock: Ticket mentions CASB product with high urgency based on content analysis."
+            }
+            content = f"```json\n{json.dumps(mock_response, indent=2)}\n```"
+        elif "rag" in operation.lower() or "response" in operation.lower():
+            # Mock RAG response
+            content = """Based on the documentation, here's how to configure CASB for Salesforce integration:
+
+1. Navigate to Settings > CASB > Salesforce
+2. Enter your Salesforce credentials
+3. Configure sync preferences (real-time or scheduled)
+4. Test the connection [1]
+
+For troubleshooting, check the integration logs in the CASB dashboard."""
+        else:
+            # Generic mock response
+            content = "This is a mock LLM response for testing purposes."
+
         return ChatCompletionResult(
-            content="This is a mock response for testing.",
+            content=content,
             model="mock-model",
             prompt_tokens=100,
-            completion_tokens=50,
+            completion_tokens=len(content.split()),
             latency_ms=100
         )

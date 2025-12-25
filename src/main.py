@@ -156,7 +156,12 @@ async def lifespan(app: FastAPI) -> AsyncGenerator:
     # Initialize classification service
     from src.triage.application import ClassificationService
     from src.triage.infrastructure import LLMClientAdapter
-    if llm_client or settings.zai_api_key:
+    from src.infrastructure.llm import MockLLMClient, ZAIILLMClient
+
+    if settings.mock_llm:
+        logger.info("Using MOCK LLM mode - no API calls will be made")
+        classification_service = ClassificationService(MockLLMClient())
+    elif llm_client or settings.zai_api_key:
         llm_adapter = LLMClientAdapter(settings.zai_api_key)
         classification_service = ClassificationService(llm_adapter)
     else:
