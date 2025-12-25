@@ -13,6 +13,9 @@ ENV PYTHONUNBUFFERED=1 \
 # Set working directory
 WORKDIR /app
 
+# Set PYTHONPATH to include src directory (set before user switch)
+ENV PYTHONPATH=/app/src:$PYTHONPATH
+
 # Install system dependencies and UV
 RUN apt-get update && apt-get install -y \
     gcc \
@@ -45,12 +48,9 @@ USER appuser
 # Expose port
 EXPOSE 8000
 
-# Set PYTHONPATH to include src directory
-ENV PYTHONPATH=/app/src:$PYTHONPATH
-
 # Health check
 HEALTHCHECK --interval=30s --timeout=10s --start-period=40s --retries=3 \
     CMD curl -f http://localhost:8000/health || exit 1
 
 # Run the application using UV
-CMD ["uv", "run", "uvicorn", "src.main:app", "--host", "0.0.0.0", "--port", "8000"]
+CMD ["uv", "run", "--directory", "/app", "uvicorn", "src.main:app", "--host", "0.0.0.0", "--port", "8000"]
