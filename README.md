@@ -55,7 +55,11 @@ docker-compose up --build
 
 ## 🌐 API Documentation
 
-Once running, visit:
+**Live Demo (Production):**
+- **Swagger UI**: https://aigenius-ticketing.onrender.com/docs
+- **Health Check**: https://aigenius-ticketing.onrender.com/health
+
+**Local Development:**
 - **Swagger UI**: http://localhost:8000/docs
 - **Health Check**: http://localhost:8000/health
 
