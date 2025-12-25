@@ -189,6 +189,18 @@ aigenius-ticketing/
 - Health check endpoint with system status
 - SLA breach alerts to Slack
 
+### Slack SLA Breach Alerts
+Real-time notifications sent to Slack when SLA thresholds are at risk or breached.
+
+![Slack SLA Breach Alert](docs/images/slack-breach-alert.png)
+
+### Grafana Monitoring Dashboard
+Track LLM performance, API latency, and system metrics with OTLP integration.
+
+![Grafana LLM Monitoring](docs/images/grafana-monitoring.png)
+
+
+
 ## 🤖 AI Models
 
 ### Classification (Groq Llama 3.3-70b)
