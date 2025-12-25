@@ -18,9 +18,8 @@ apscheduler>=3.10.4
 # LLM & RAG - Z.AI SDK (GLM 4.7)
 zai-sdk>=0.1.0
 
-# Vector Store - Milvus
+# Vector Store - Milvus (pymilvus works on all platforms)
 pymilvus>=2.3.0
-milvus>=2.3.0
 
 # HTTP Client
 httpx>=0.26.0
