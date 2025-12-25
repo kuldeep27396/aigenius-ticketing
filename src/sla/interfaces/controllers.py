@@ -281,16 +281,23 @@ async def get_ticket_sla(
     ticket_repo = SQLAlchemyTicketRepository(session)
     alert_repo = SQLAlchemyAlertRepository(session)
 
-    # Get ticket
-    ticket_data = await ticket_repo.get_by_id(ticket_id)
+    # Get ticket - try external_id first, then internal UUID
+    ticket_data = await ticket_repo.get_by_external_id(ticket_id)
+    if not ticket_data:
+        # Try as internal UUID
+        ticket_data = await ticket_repo.get_by_id(ticket_id)
+
     if not ticket_data:
         raise HTTPException(
             status_code=status.HTTP_404_NOT_FOUND,
             detail=f"Ticket {ticket_id} not found"
         )
 
+    # Use internal ID for SLA calculation
+    internal_id = str(ticket_data.id)
+
     # Calculate SLA metrics
-    metrics = await sla_service.calculate_sla_metrics(ticket_id)
+    metrics = await sla_service.calculate_sla_metrics(internal_id)
     if not metrics:
         raise HTTPException(
             status_code=status.HTTP_404_NOT_FOUND,
@@ -298,7 +305,7 @@ async def get_ticket_sla(
         )
 
     # Get active alerts
-    pending_alerts = await alert_repo.get_pending_alerts(ticket_id)
+    pending_alerts = await alert_repo.get_pending_alerts(internal_id)
 
     # Build response
     response_sla = SLAStatusResponse(
