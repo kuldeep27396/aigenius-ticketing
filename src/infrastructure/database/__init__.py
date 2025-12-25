@@ -63,8 +63,11 @@ def init_database() -> AsyncEngine:
     """
     global _engine, _session_maker
 
+    # Fix asyncpg SSL: replace sslmode with ssl for asyncpg compatibility
+    database_url = settings.database_url.replace("sslmode=", "ssl=")
+
     _engine = create_async_engine(
-        settings.database_url,
+        database_url,
         echo=settings.debug,
         pool_size=settings.db_pool_size,
         max_overflow=settings.db_max_overflow,

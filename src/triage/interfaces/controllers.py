@@ -96,7 +96,7 @@ STATS_RESPONSE_EXAMPLE = {
 
 def get_classification_service() -> ClassificationService:
     """Get classification service (singleton for now)."""
-    from main import classification_service
+    from src.main import classification_service
     if classification_service is None:
         raise HTTPException(
             status_code=503,
@@ -107,7 +107,7 @@ def get_classification_service() -> ClassificationService:
 
 async def get_rag_service(request: Request) -> RAGService:
     """Get RAG service with vector store from app state."""
-    from main import llm_client
+    from src.main import llm_client
 
     if not hasattr(request.app.state, "vector_store"):
         raise HTTPException(
