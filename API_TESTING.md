@@ -1,21 +1,62 @@
 # AIGenius Ticketing API - Testing Guide
 
-Complete curl commands to test all endpoints of the AIGenius Ticketing API.
+Complete curl commands to test all endpoints of the AIGenius Ticketing API using **Groq Llama 3.3** (ultra-fast, free LLM).
 
 **Base URL:** `http://localhost:8000`
 
 ## Table of Contents
 
+- [Setup](#setup)
 - [Health Check](#health-check)
 - [SLA Monitoring Module](#sla-monitoring-module)
-  - [Ingest Tickets](#1-ingest-tickets)
-  - [Get SLA Dashboard](#2-get-sla-dashboard)
-  - [Get Ticket SLA Details](#3-get-ticket-sla-details)
 - [Triage Module](#triage-module)
-  - [Classify Ticket](#4-classify-ticket)
-  - [Generate RAG Response](#5-generate-rag-response)
-  - [Ingest Documentation](#6-ingest-documentation)
-  - [Get Classification Stats](#7-get-classification-stats)
+- [Quick Test Script](#quick-test-script)
+- [SLA Time Reference](#sla-time-reference)
+
+---
+
+## Setup
+
+### Prerequisites
+
+```bash
+# Install UV (fast Python package manager)
+curl -LsSf https://astral.sh/uv/install.sh | sh
+
+# Install dependencies
+uv sync
+
+# Install jq for pretty JSON output (optional)
+brew install jq  # macOS
+# or
+apt install jq   # Linux
+```
+
+### Environment Variables
+
+Create or update `.env` file:
+
+```bash
+# Groq LLM Configuration (Fast & Free)
+GROQ_API_KEY=gsk_xxxxxxxxxxxxxxxxxxxxxxxxxxxxxx
+LLM_MODEL=llama-3.3-70b-versatile
+MOCK_LLM=false
+
+# Database
+DATABASE_URL=postgresql+asyncpg://user:pass@host:5432/dbname
+```
+
+**Get a free Groq API key:** https://groq.com
+
+### Start the Server
+
+```bash
+# Using UV (recommended)
+uv run uvicorn src.main:app --host 0.0.0.0 --port 8000
+
+# Or with explicit environment
+GROQ_API_KEY=your-key LLM_MODEL=llama-3.3-70b-versatile uv run uvicorn src.main:app --host 0.0.0.0 --port 8000
+```
 
 ---
 
@@ -59,14 +100,12 @@ curl -s -X POST http://localhost:8000/sla/tickets \
   -d '{
     "tickets": [
       {
-        "id": "TICKET-001",
+        "external_id": "TICKET-001",
         "priority": "critical",
         "customer_tier": "enterprise",
         "status": "open",
         "subject": "Production CASB outage - Salesforce sync down",
-        "content": "Our production CASB integration with Salesforce has completely stopped syncing. This is affecting all our users and is a critical business issue.",
-        "created_at": "2024-01-15T10:00:00Z",
-        "updated_at": "2024-01-15T10:00:00Z"
+        "content": "Our production CASB integration with Salesforce has completely stopped syncing. This is affecting all our users and is a critical business issue."
       }
     ]
   }' | jq
@@ -80,79 +119,31 @@ curl -s -X POST http://localhost:8000/sla/tickets \
   -d '{
     "tickets": [
       {
-        "id": "TICKET-002",
+        "external_id": "TICKET-002",
         "priority": "high",
         "customer_tier": "enterprise",
         "status": "in_progress",
         "subject": "SWG policy not blocking malicious domains",
-        "content": "Secure Web Gateway is allowing access to known malicious domains. Need urgent policy review.",
-        "created_at": "2024-01-15T09:00:00Z",
-        "updated_at": "2024-01-15T11:30:00Z",
-        "first_response_at": "2024-01-15T09:15:00Z"
+        "content": "Secure Web Gateway is allowing access to known malicious domains. Need urgent policy review."
       },
       {
-        "id": "TICKET-003",
+        "external_id": "TICKET-003",
         "priority": "medium",
         "customer_tier": "business",
         "status": "open",
         "subject": "ZTNA configuration help needed",
-        "content": "Need assistance configuring Zero Trust Network Access for new applications.",
-        "created_at": "2024-01-15T08:00:00Z",
-        "updated_at": "2024-01-15T08:00:00Z"
+        "content": "Need assistance configuring Zero Trust Network Access for new applications."
       },
       {
-        "id": "TICKET-004",
+        "external_id": "TICKET-004",
         "priority": "high",
         "customer_tier": "standard",
         "status": "pending_customer",
         "subject": "DLP rule tuning required",
-        "content": "Data Loss Prevention is generating too many false positives. Need to tune the rules.",
-        "created_at": "2024-01-14T14:00:00Z",
-        "updated_at": "2024-01-15T07:00:00Z"
-      },
-      {
-        "id": "TICKET-005",
-        "priority": "low",
-        "customer_tier": "free",
-        "status": "open",
-        "subject": "SSPM integration question",
-        "content": "How do I integrate SaaS Security Posture Management with our existing SaaS applications?",
-        "created_at": "2024-01-14T10:00:00Z",
-        "updated_at": "2024-01-14T10:00:00Z"
-      },
-      {
-        "id": "TICKET-006",
-        "priority": "critical",
-        "customer_tier": "business",
-        "status": "open",
-        "subject": "CFW blocking legitimate traffic",
-        "content": "Cloud Firewall is incorrectly blocking legitimate business traffic. Urgent fix needed.",
-        "created_at": "2024-01-15T07:00:00Z",
-        "updated_at": "2024-01-15T07:00:00Z"
-      },
-      {
-        "id": "TICKET-007",
-        "priority": "medium",
-        "customer_tier": "enterprise",
-        "status": "resolved",
-        "subject": "API rate limiting issue",
-        "content": "Need to increase API rate limits for our integration.",
-        "created_at": "2024-01-14T08:00:00Z",
-        "updated_at": "2024-01-15T10:00:00Z",
-        "resolved_at": "2024-01-15T10:00:00Z"
+        "content": "Data Loss Prevention is generating too many false positives. Need to tune the rules."
       }
     ]
   }' | jq
-```
-
-**Expected Response:**
-```json
-{
-  "created": 6,
-  "updated": 0,
-  "failed": 0,
-  "errors": []
-}
 ```
 
 **Available Values:**
@@ -166,149 +157,21 @@ curl -s -X POST http://localhost:8000/sla/tickets \
 
 View all tickets with SLA status and summary statistics.
 
-#### All Tickets (Default)
-
 ```bash
 curl -s "http://localhost:8000/sla/dashboard" | jq
 ```
 
-#### Filtered - Enterprise Critical Tickets
-
-```bash
-curl -s "http://localhost:8000/sla/dashboard?customer_tier=enterprise&priority=critical" | jq
-```
-
-#### Filtered - Only Breached SLAs
-
-```bash
-curl -s "http://localhost:8000/sla/dashboard?sla_state=breached" | jq
-```
-
-#### Filtered - High Priority, In Progress
-
-```bash
-curl -s "http://localhost:8000/sla/dashboard?priority=high&status=in_progress" | jq
-```
-
-#### With Pagination
-
-```bash
-curl -s "http://localhost:8000/sla/dashboard?limit=5&offset=0" | jq
-```
-
-**Expected Response Structure:**
+**Response Summary:**
 ```json
 {
-  "tickets": [
-    {
-      "ticket_id": "uuid",
-      "external_id": "TICKET-001",
-      "priority": "critical",
-      "customer_tier": "enterprise",
-      "status": "open",
-      "created_at": "2024-01-15T10:00:00Z",
-      "updated_at": "2024-01-15T10:00:00Z",
-      "response_sla": {
-        "deadline": "2024-01-15T10:15:00Z",
-        "remaining_seconds": 900,
-        "percentage_remaining": 25.0,
-        "is_breached": false,
-        "state": "on_track",
-        "met_at": null
-      },
-      "resolution_sla": {
-        "deadline": "2024-01-15T12:00:00Z",
-        "remaining_seconds": 6300,
-        "percentage_remaining": 87.5,
-        "is_breached": false,
-        "state": "on_track",
-        "met_at": null
-      },
-      "overall_state": "on_track",
-      "next_deadline": "2024-01-15T10:15:00Z",
-      "active_alerts": []
-    }
-  ],
-  "total_count": 7,
+  "total_count": 4,
   "summary": {
-    "total_tickets": 7,
+    "total_tickets": 4,
     "breached_count": 2,
     "at_risk_count": 1,
-    "on_track_count": 3,
-    "met_count": 1,
-    "breach_rate": 28.57
+    "on_track_count": 1,
+    "met_count": 0
   }
-}
-```
-
-**SLA States:**
-- `breached` - SLA deadline has passed
-- `at_risk` - Warning threshold exceeded (80% of SLA used)
-- `on_track` - SLA is within safe limits
-- `met` - SLA was successfully achieved
-
----
-
-### 3. Get Ticket SLA Details
-
-Get detailed SLA information for a specific ticket.
-
-```bash
-curl -s "http://localhost:8000/sla/tickets/TICKET-001" | jq
-```
-
-**Note:** Replace `TICKET-001` with the actual ticket ID from the database. Use the UUID from the dashboard response.
-
-```bash
-# Get the ticket ID from dashboard first
-TICKET_ID=$(curl -s "http://localhost:8000/sla/dashboard?limit=1" | jq -r '.tickets[0].ticket_id')
-
-# Then get detailed SLA information
-curl -s "http://localhost:8000/sla/tickets/$TICKET_ID" | jq
-```
-
-**Expected Response:**
-```json
-{
-  "ticket_id": "uuid",
-  "external_id": "TICKET-001",
-  "priority": "critical",
-  "customer_tier": "enterprise",
-  "status": "open",
-  "created_at": "2024-01-15T10:00:00Z",
-  "updated_at": "2024-01-15T10:00:00Z",
-  "response_sla": {
-    "deadline": "2024-01-15T10:15:00Z",
-    "remaining_seconds": 900,
-    "percentage_remaining": 25.0,
-    "is_breached": false,
-    "state": "on_track",
-    "met_at": null
-  },
-  "resolution_sla": {
-    "deadline": "2024-01-15T12:00:00Z",
-    "remaining_seconds": 6300,
-    "percentage_remaining": 87.5,
-    "is_breached": false,
-    "state": "on_track",
-    "met_at": null
-  },
-  "overall_state": "on_track",
-  "next_deadline": "2024-01-15T10:15:00Z",
-  "active_alerts": [
-    {
-      "id": "alert-uuid",
-      "sla_type": "response",
-      "alert_type": "warning",
-      "triggered_at": "2024-01-15T10:05:00Z",
-      "deadline": "2024-01-15T10:15:00Z",
-      "remaining_seconds": 600,
-      "state": "at_risk",
-      "escalation_level": 1,
-      "notification_sent": false,
-      "channels": ["slack", "email"]
-    }
-  ]
 }
 ```
 
@@ -316,9 +179,9 @@ curl -s "http://localhost:8000/sla/tickets/$TICKET_ID" | jq
 
 ## Triage Module
 
-### 4. Classify Ticket
+### 3. Classify Ticket (Groq Llama 3.3)
 
-Classify a ticket by product area and urgency using GLM 4.7 LLM.
+Classify a ticket by product area and urgency using **Groq Llama 3.3-70b-versatile**.
 
 #### CASB Ticket Classification
 
@@ -330,6 +193,20 @@ curl -s -X POST http://localhost:8000/triage/classify \
     "subject": "CASB Salesforce sync not working",
     "content": "Our CASB integration with Salesforce has stopped syncing data since yesterday. All users are affected."
   }' | jq
+```
+
+**Response:**
+```json
+{
+  "ticket_id": "uuid",
+  "classification": {
+    "product": "CASB",
+    "urgency": "high",
+    "confidence": 0.9,
+    "reasoning": "CASB integration issue affecting business operations with sync failure."
+  },
+  "processing_time_ms": 1100
+}
 ```
 
 #### SWG Ticket Classification
@@ -368,44 +245,6 @@ curl -s -X POST http://localhost:8000/triage/classify \
   }' | jq
 ```
 
-#### SSPM Ticket Classification
-
-```bash
-curl -s -X POST http://localhost:8000/triage/classify \
-  -H "Content-Type: application/json" \
-  -d '{
-    "ticket_id": "TICKET-105",
-    "subject": "SSPM not detecting misconfigurations",
-    "content": "SaaS Security Posture Management is not reporting security misconfigurations in our Office 365 tenant."
-  }' | jq
-```
-
-#### CFW Ticket Classification
-
-```bash
-curl -s -X POST http://localhost:8000/triage/classify \
-  -H "Content-Type: application/json" \
-  -d '{
-    "ticket_id": "TICKET-106",
-    "subject": "Cloud Firewall rules not applying",
-    "content": "Cloud Firewall rules are not being applied to new VPC deployments. Traffic is not being filtered correctly."
-  }' | jq
-```
-
-**Expected Response:**
-```json
-{
-  "ticket_id": "uuid",
-  "classification": {
-    "product": "CASB",
-    "urgency": "high",
-    "confidence": 0.92,
-    "reasoning": "Ticket mentions CASB and Salesforce integration - core product issue with sync failure affecting operations."
-  },
-  "processing_time_ms": 1500
-}
-```
-
 **Product Classifications:**
 - `CASB` - Cloud Access Security Broker
 - `SWG` - Secure Web Gateway
@@ -423,11 +262,9 @@ curl -s -X POST http://localhost:8000/triage/classify \
 
 ---
 
-### 5. Generate RAG Response
+### 4. Generate RAG Response
 
 Generate AI-powered responses using Retrieval Augmented Generation.
-
-#### Basic Query
 
 ```bash
 curl -s -X POST http://localhost:8000/triage/respond \
@@ -438,88 +275,9 @@ curl -s -X POST http://localhost:8000/triage/respond \
   }' | jq
 ```
 
-#### Troubleshooting Query
-
-```bash
-curl -s -X POST http://localhost:8000/triage/respond \
-  -H "Content-Type: application/json" \
-  -d '{
-    "ticket_id": "TICKET-002",
-    "query": "What are the steps to troubleshoot SWG policy not blocking traffic?"
-  }' | jq
-```
-
-#### Configuration Query
-
-```bash
-curl -s -X POST http://localhost:8000/triage/respond \
-  -H "Content-Type: application/json" \
-  -d '{
-    "ticket_id": "TICKET-003",
-    "query": "How do I set up ZTNA for custom applications?"
-  }' | jq
-```
-
-**Expected Response:**
-```json
-{
-  "ticket_id": "TICKET-001",
-  "response": "To configure CASB for Salesforce integration, follow these steps:\n\n1. Navigate to Settings > CASB > Salesforce\n2. Enter your Salesforce credentials\n3. Configure sync preferences\n4. Test the connection\n\nFor detailed instructions, see the CASB Configuration Guide [1].",
-  "citations": [
-    {
-      "index": 1,
-      "url": "https://docs.example.com/casb-salesforce",
-      "title": "CASB Salesforce Integration Guide",
-      "snippet": "Navigate to Settings > CASB > Salesforce to configure the integration..."
-    }
-  ],
-  "sources_used": 1,
-  "processing_time_ms": 2500
-}
-```
-
-**Note:** If no documents are indexed, the response will be:
-```json
-{
-  "ticket_id": "TICKET-001",
-  "response": "No documentation has been indexed yet. Please use the POST /ingest endpoint to add documents first.",
-  "citations": [],
-  "sources_used": 0,
-  "processing_time_ms": 475
-}
-```
-
 ---
 
-### 6. Ingest Documentation
-
-Index documentation for RAG-based responses.
-
-#### Ingest from URL (Web Scraping)
-
-```bash
-curl -s -X POST http://localhost:8000/triage/ingest \
-  -H "Content-Type: application/json" \
-  -d '{
-    "url": "https://docs.example.com/casb-configuration",
-    "max_pages": 10
-  }' | jq
-```
-
-**Expected Response (Web Scraping Not Yet Implemented):**
-```json
-{
-  "status": "not_implemented",
-  "message": "Web scraping not yet implemented for P0",
-  "documents_processed": 0,
-  "chunks_created": 0,
-  "url": "https://docs.netskope.com/casb-configuration"
-}
-```
-
----
-
-### 7. Get Classification Stats
+### 5. Get Classification Stats
 
 View classification statistics and document index status.
 
@@ -527,19 +285,16 @@ View classification statistics and document index status.
 curl -s http://localhost:8000/triage/stats | jq
 ```
 
-**Expected Response:**
+**Response:**
 ```json
 {
-  "classifications_total": 6,
+  "classifications_total": 4,
   "documents_indexed": 0,
   "product_distribution": {
-    "CASB": 2,
+    "CASB": 1,
     "SWG": 1,
     "ZTNA": 1,
-    "DLP": 1,
-    "SSPM": 1,
-    "CFW": 0,
-    "GENERAL": 0
+    "DLP": 1
   }
 }
 ```
@@ -555,48 +310,39 @@ Save this as `test_api.sh` and run to test all endpoints:
 
 BASE_URL="http://localhost:8000"
 
-echo "=== AIGenius Ticketing API Test ==="
+echo "=== AIGenius Ticketing API Test (Groq LLM) ==="
 echo ""
 
 echo "1. Health Check"
-curl -s $BASE_URL/health | jq
+curl -s $BASE_URL/health | jq '.status, .checks.llm_client'
 echo -e "\n"
 
-echo "2. Ingest SLA Tickets"
-curl -s -X POST $BASE_URL/sla/tickets \
+echo "2. Classify CASB Ticket"
+curl -s -X POST $BASE_URL/triage/classify \
   -H "Content-Type: application/json" \
   -d '{
-    "tickets": [
-      {
-        "id": "TEST-001",
-        "priority": "high",
-        "customer_tier": "enterprise",
-        "status": "open",
-        "subject": "Test ticket",
-        "content": "Test content",
-        "created_at": "2024-01-15T10:00:00Z",
-        "updated_at": "2024-01-15T10:00:00Z"
-      }
-    ]
-  }' | jq
+    "ticket_id": "TEST-001",
+    "subject": "CASB Salesforce sync issue",
+    "content": "Our CASB integration with Salesforce has stopped syncing data."
+  }' | jq '.classification'
 echo -e "\n"
 
-echo "3. Get SLA Dashboard"
-curl -s "$BASE_URL/sla/dashboard?limit=3" | jq
-echo -e "\n"
-
-echo "4. Classify Ticket"
+echo "3. Classify SWG Ticket"
 curl -s -X POST $BASE_URL/triage/classify \
   -H "Content-Type: application/json" \
   -d '{
     "ticket_id": "TEST-002",
-    "subject": "CASB issue",
-    "content": "CASB not working"
-  }' | jq
+    "subject": "SWG blocking legitimate sites",
+    "content": "Secure Web Gateway is blocking business-critical websites."
+  }' | jq '.classification'
 echo -e "\n"
 
-echo "5. Get Triage Stats"
+echo "4. Get Triage Stats"
 curl -s $BASE_URL/triage/stats | jq
+echo -e "\n"
+
+echo "5. SLA Dashboard Summary"
+curl -s $BASE_URL/sla/dashboard | jq '.summary'
 echo -e "\n"
 
 echo "=== Test Complete ==="
@@ -632,50 +378,69 @@ chmod +x test_api.sh
 
 ---
 
-## Tips for Testing
+## LLM Provider Configuration
 
-1. **Use `jq` for pretty output**: All commands include `| jq` for formatted JSON output. Install jq: `brew install jq` (macOS) or `apt install jq` (Linux).
+The system supports multiple LLM providers (used in priority order):
 
-2. **Check database for ticket IDs**: After ingesting tickets, use the dashboard to get actual ticket UUIDs for detailed queries.
+1. **Groq** (Default) - `llama-3.3-70b-versatile`
+   - Fastest inference (~1-2 seconds)
+   - Free tier available
+   - Get API key: https://groq.com
 
-3. **Monitor background jobs**: The SLA evaluation job runs every 60 seconds. Watch server logs for alert creation.
+2. **OpenAI** - `gpt-4o`
+   - Set `OPENAI_API_KEY` in .env
+   - Requires paid account
 
-4. **Test SLA breaches**: Create tickets with old `created_at` timestamps to test breached SLA scenarios.
+3. **Z.AI** - `glm-4.7`
+   - Set `ZAI_API_KEY` in .env
+   - Requires account balance
 
-5. **Test different customer tiers**: Ingest tickets with different tiers to see varying SLA deadlines.
+### Switching LLM Providers
 
-6. **Check the OpenAPI spec**: Visit http://localhost:8000/docs for interactive API documentation with "Try it out" buttons.
+```bash
+# Use Groq (default)
+GROQ_API_KEY=your-key LLM_MODEL=llama-3.3-70b-versatile
+
+# Use OpenAI
+OPENAI_API_KEY=your-key LLM_MODEL=gpt-4o
+
+# Use Z.AI
+ZAI_API_KEY=your-key LLM_MODEL=glm-4.7
+```
 
 ---
 
 ## Troubleshooting
 
-### Server not responding
-```bash
-# Check if server is running
-lsof -ti:8000
+### LLM Not Available (503 Error)
 
-# Restart server (using UV - recommended)
-cd modular-monolith
-uv run python -m src.main
-
-# Or using traditional venv
-cd modular-monolith
-source venv/bin/activate
-PYTHONPATH=src python -m src.main
+```json
+{
+  "detail": "Classification service not available - LLM not configured"
+}
 ```
 
-### Database errors
+**Solution:** Set `GROQ_API_KEY` in your `.env` file or environment variables.
+
+### Database Connection Error
+
 ```bash
 # Check PostgreSQL is running
 pg_isready
 
-# View database logs
-tail -f /usr/local/var/log/postgres.log
+# Verify DATABASE_URL in .env
+cat .env | grep DATABASE_URL
 ```
 
-### LLM API errors
-The classification endpoint may return 429 errors if the LLM API quota is exceeded. This is an external service limitation.
+### View Server Logs
+
+```bash
+# If running in foreground
+# Logs are displayed directly in terminal
+
+# Check for errors
+tail -f logs/app.log
+```
 
 ---
 
@@ -683,5 +448,5 @@ The classification endpoint may return 429 errors if the LLM API quota is exceed
 
 - **Swagger UI**: http://localhost:8000/docs
 - **ReDoc**: http://localhost:8000/redoc
-- **OpenAPI Schema**: http://localhost:8000/openapi.json
+- **Groq Console**: https://console.groq.com
 - **Health Check**: http://localhost:8000/health

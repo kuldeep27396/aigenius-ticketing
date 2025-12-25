@@ -7,7 +7,7 @@ An intelligent customer support automation platform with SLA monitoring, AI-powe
 | Module | Capability | Description |
 |--------|-------------|-------------|
 | **SLA Monitoring** | Real-time Tracking | Monitor response and resolution SLAs with automated alerts |
-| **AI Classification** | GLM 4.7 LLM | Auto-classify tickets by product and urgency |
+| **AI Classification** | Groq Llama 3.3 | Auto-classify tickets by product and urgency |
 | **Smart Responses** | RAG with Milvus | Generate contextual responses from knowledge base |
 | **Alert System** | Slack Integration | Real-time notifications for SLA breaches |
 
@@ -23,10 +23,11 @@ An intelligent customer support automation platform with SLA monitoring, AI-powe
 | Package Manager | **UV** (fast package manager) |
 | Framework | FastAPI |
 | Database | PostgreSQL (async) |
-| LLM | GLM 4.7 |
-| Vector Store | Milvus (Zhipu Cloud) |
+| LLM | **Groq (Llama 3.3-70b-versatile)** - Fast & Free |
+| Vector Store | Milvus (Zilliz Cloud) |
 | Scheduler | APScheduler |
 | Config | YAML with hot-reload |
+| Metrics | Grafana OTLP |
 
 ## 📦 Quick Start
 
@@ -42,7 +43,7 @@ curl -LsSf https://astral.sh/uv/install.sh | sh
 uv sync
 
 # Run the service
-uv run python -m src.main
+uv run uvicorn src.main:app --host 0.0.0.0 --port 8000
 ```
 
 **Using Docker:**
@@ -64,12 +65,21 @@ Once running, visit:
 # Database
 DATABASE_URL=postgresql+asyncpg://user:pass@host:5432/dbname
 
-# LLM (GLM 4.7)
-ZAI_API_KEY=your-zai-api-key
+# LLM (Groq - Fast & Free)
+GROQ_API_KEY=your-groq-api-key
+LLM_MODEL=llama-3.3-70b-versatile
+
+# Vector Store (Optional - for RAG)
+ZILLIZ_URI=your-zilliz-uri
+ZILLIZ_API_KEY=your-zilliz-key
 
 # Slack Alerts
 SLACK_WEBHOOK_URL=https://hooks.slack.com/services/YOUR/WEBHOOK
 SLACK_CHANNEL=#support-alerts
+
+# Grafana Metrics (Optional)
+GRAFANA_HOST=https://otlp-gateway-prod-ap-south-1.grafana.net/otlp/v1/metrics
+GRAFANA_API_KEY=your-grafana-key
 ```
 
 ## 📊 Endpoints
@@ -83,6 +93,55 @@ SLACK_CHANNEL=#support-alerts
 - `POST /triage/classify` - Classify ticket by product and urgency
 - `POST /triage/respond` - Generate AI-powered response (RAG)
 - `GET /triage/stats` - View classification statistics
+
+## 🧪 API Testing Examples
+
+### Health Check
+```bash
+curl http://localhost:8000/health
+```
+
+**Response:**
+```json
+{
+  "status": "healthy",
+  "version": "1.0.0",
+  "checks": {
+    "database": "connected",
+    "llm_client": "available"
+  }
+}
+```
+
+### Classify Ticket
+```bash
+curl -X POST http://localhost:8000/triage/classify \
+  -H "Content-Type: application/json" \
+  -d '{
+    "ticket_id": "TICKET-001",
+    "subject": "CASB Salesforce sync issue",
+    "content": "Our CASB integration with Salesforce has stopped syncing data."
+  }'
+```
+
+**Response:**
+```json
+{
+  "ticket_id": "uuid",
+  "classification": {
+    "product": "CASB",
+    "urgency": "high",
+    "confidence": 0.9,
+    "reasoning": "CASB integration issue affecting data sync."
+  },
+  "processing_time_ms": 1100
+}
+```
+
+### SLA Dashboard
+```bash
+curl http://localhost:8000/sla/dashboard
+```
 
 ## 📝 Configuration
 
@@ -114,43 +173,47 @@ aigenius-ticketing/
 │   ├── sla/                    # SLA Monitoring module
 │   └── triage/                 # AI Classification & RAG module
 ├── k8s/                        # Kubernetes manifests
-├── config/                     # Configuration
 ├── docker-compose.yaml         # Local development
 ├── pyproject.toml              # Dependencies (UV)
 ├── .env                        # Environment variables
 ├── sla_config.yaml             # SLA configuration
+├── API_TESTING.md              # API Testing Guide
 └── README.md                   # This file
-```
-
-## 🧪 Testing
-
-```bash
-# Install dev dependencies
-uv sync --dev
-
-# Run tests
-uv run pytest
 ```
 
 ## 📈 Metrics & Monitoring
 
+![Grafana Dashboard](docs/images/grafana-dashboard.png)
+
 - Structured JSON logging with correlation IDs
-- Prometheus metrics integration
+- Grafana OTLP metrics integration
 - Health check endpoint with system status
 - SLA breach alerts to Slack
 
 ## 🤖 AI Models
 
-### Classification (GLM 4.7)
+### Classification (Groq Llama 3.3-70b)
 - **Products**: CASB, SWG, ZTNA, DLP, SSPM, CFW, GENERAL
 - **Urgency**: critical, high, medium, low
 - **Confidence**: 0.0 - 1.0 score
+- **Latency**: ~1-2 seconds (ultra-fast inference)
+
+### Supported LLM Providers (Priority Order)
+1. **Groq** (Default) - Llama 3.3, ultra-fast, free
+2. OpenAI - GPT-4o (requires API key)
+3. Z.AI - GLM 4.7 (requires API key)
 
 ### RAG (Retrieval Augmented Generation)
 - **Vector Store**: Milvus with semantic search
-- **Embeddings**: 1024 dimensions
+- **Embeddings**: 768 dimensions (Groq-compatible)
 - **Top-K**: 5 documents retrieved
 
 ## 📄 License
 
 MIT License - see LICENSE file for details.
+
+## 🔗 Links
+
+- **GitHub**: https://github.com/kuldeep27396/aigenius-ticketing
+- **Groq**: https://groq.com (Get free API key)
+- **Zilliz Cloud**: https://zilliz.com (Vector database)

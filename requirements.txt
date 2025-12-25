@@ -1,5 +1,5 @@
-# AIGenius Ticketing - Dependencies for Vercel/Pip deployment
-# Generated from pyproject.toml for compatibility
+# AIGenius Ticketing - Dependencies
+# For deployment on Render, Vercel, or traditional pip environments
 
 # Web Framework
 fastapi>=0.109.0
@@ -15,8 +15,9 @@ psycopg2-binary>=2.9.9
 # Background Tasks
 apscheduler>=3.10.4
 
-# LLM & RAG - Z.AI SDK (GLM 4.7)
-zai-sdk>=0.1.0
+# LLM Providers - Groq (OpenAI-compatible), OpenAI, Z.AI
+openai>=1.0.0  # For Groq and OpenAI (primary)
+zai-sdk>=0.1.0  # For Z.AI (GLM 4.7) - optional fallback
 
 # Vector Store - Milvus (pymilvus works on all platforms)
 pymilvus>=2.3.0
@@ -29,18 +30,17 @@ python-dotenv>=1.0.0
 pyyaml>=6.0.1
 watchdog>=4.0.0
 
-# Metrics
+# Metrics & Monitoring
 prometheus-client>=0.19.0
+opentelemetry-api>=1.22.0
+opentelemetry-sdk>=1.22.0
+opentelemetry-exporter-otlp>=1.22.0
 
 # Logging
 python-json-logger>=2.0.0
+sniffio>=1.3.1
+greenlet>=3.3.0
 
-# Additional dependencies
-greenlet>=3.0.0
-sniffio>=1.3.0
-
-# Vercel/Serverless compatibility
+# Serverless compatibility (optional)
 mangum>=0.17.0
-
-# ASGI server
 uvloop>=0.19.0
