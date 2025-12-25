@@ -1,21 +1,21 @@
 """
-Vercel entry point for AIGenius Ticketing API
+Vercel serverless function entry point
 """
 import sys
 import os
 
 # Add parent directory to path
-parent_dir = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
-if parent_dir not in sys.path:
-    sys.path.insert(0, parent_dir)
+sys.path.insert(0, os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
 
-# Set environment variables for serverless
-os.environ.setdefault("ENVIRONMENT", "production")
-os.environ.setdefault("SLA_CONFIG_PATH", "/tmp/sla_config.yaml")
-os.environ.setdefault("SLA_EVALUATION_INTERVAL", "0")  # Disable scheduler in serverless
-
-from mangum import Adapter
 from src.main import app
 
-# Lambda handler for ASGI app (disable lifespan for serverless)
-handler = Adapter(app, lifespan="off")
+# Vercel handler - export the ASGI app directly
+# Vercel's Python runtime will handle the ASGI app
+app_handler = app
+
+# Lambda-style handler for Vercel
+def handler(event, context):
+    """AWS Lambda-style handler for Vercel"""
+    from mangum import Adapter
+    adapter = Adapter(app, lifespan="off")
+    return adapter(event, context)
