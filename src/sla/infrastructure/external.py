@@ -20,9 +20,9 @@ from apscheduler.schedulers.asyncio import AsyncIOScheduler
 from watchdog.observers import Observer
 from watchdog.events import FileSystemEventHandler
 
-from shared.infrastructure.logging import get_logger
-from config import settings
-from sla.domain.value_objects import SLAConfig
+from src.shared.infrastructure.logging import get_logger
+from src.config import settings
+from src.sla.domain.value_objects import SLAConfig
 
 logger = get_logger(__name__)
 

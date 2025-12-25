@@ -15,10 +15,10 @@ from uuid import uuid4
 
 from sqlalchemy.ext.asyncio import AsyncSession
 
-from sla.domain import SLAAlert, SLAConfig
-from sla.infrastructure.external import SlackClient, SlackMessage
-from sla.domain.value_objects import SLACalculator
-from config import (
+from src.sla.domain import SLAAlert, SLAConfig
+from src.sla.infrastructure.external import SlackClient, SlackMessage
+from src.sla.domain.value_objects import SLACalculator
+from src.config import (
     Priority, CustomerTier, SLAType, SLAState, TicketStatus, AlertType
 )
 
@@ -52,7 +52,7 @@ class SLAEvaluator:
         Returns:
             Summary of evaluation results
         """
-        from sla.infrastructure.models import TicketModel, AlertModel
+        from src.sla.infrastructure.models import TicketModel, AlertModel
         from sqlalchemy import select
 
         config = self._config_manager.config

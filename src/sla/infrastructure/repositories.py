@@ -15,14 +15,14 @@ from uuid import UUID, uuid4
 from sqlalchemy import select, and_, or_
 from sqlalchemy.ext.asyncio import AsyncSession
 
-from sla.application import (
+from src.sla.application import (
     ITicketRepository, ISLAAlertRepository, ISLAConfigProvider,
     TicketEntityDTO
 )
-from sla.domain import SLAAlert
-from sla.domain.value_objects import SLAConfig, EscalationLevelConfig
-from config import TicketStatus
-from core import RepositoryException
+from src.sla.domain import SLAAlert
+from src.sla.domain.value_objects import SLAConfig, EscalationLevelConfig
+from src.config import TicketStatus
+from src.core import RepositoryException
 
 
 class SQLAlchemyTicketRepository(ITicketRepository):
@@ -37,7 +37,7 @@ class SQLAlchemyTicketRepository(ITicketRepository):
 
     async def get_by_external_id(self, external_id: str) -> Optional[Any]:
         """Get ticket by external ID."""
-        from sla.infrastructure.models import TicketModel
+        from src.sla.infrastructure.models import TicketModel
 
         stmt = select(TicketModel).where(TicketModel.external_id == external_id)
         result = await self._session.execute(stmt)
@@ -45,7 +45,7 @@ class SQLAlchemyTicketRepository(ITicketRepository):
 
     async def get_by_id(self, ticket_id: str) -> Optional[Any]:
         """Get ticket by internal ID."""
-        from sla.infrastructure.models import TicketModel
+        from src.sla.infrastructure.models import TicketModel
 
         try:
             ticket_uuid = UUID(ticket_id)
@@ -58,7 +58,7 @@ class SQLAlchemyTicketRepository(ITicketRepository):
 
     async def create(self, ticket_dto: TicketEntityDTO) -> Any:
         """Create new ticket."""
-        from sla.infrastructure.models import TicketModel
+        from src.sla.infrastructure.models import TicketModel
 
         model = TicketModel(
             id=uuid4(),
@@ -82,7 +82,7 @@ class SQLAlchemyTicketRepository(ITicketRepository):
 
     async def update(self, ticket_dto: TicketEntityDTO) -> Any:
         """Update existing ticket."""
-        from sla.infrastructure.models import TicketModel
+        from src.sla.infrastructure.models import TicketModel
 
         model = await self.get_by_external_id(ticket_dto.external_id)
         if not model:
@@ -105,7 +105,7 @@ class SQLAlchemyTicketRepository(ITicketRepository):
 
     async def exists_by_external_id(self, external_id: str) -> bool:
         """Check if ticket exists by external ID."""
-        from sla.infrastructure.models import TicketModel
+        from src.sla.infrastructure.models import TicketModel
 
         stmt = select(TicketModel.id).where(TicketModel.external_id == external_id)
         result = await self._session.execute(stmt)
@@ -118,7 +118,7 @@ class SQLAlchemyTicketRepository(ITicketRepository):
         offset: int = 0
     ) -> List[Any]:
         """List tickets with filters."""
-        from sla.infrastructure.models import TicketModel
+        from src.sla.infrastructure.models import TicketModel
 
         stmt = select(TicketModel)
 
@@ -160,7 +160,7 @@ class SQLAlchemyAlertRepository(ISLAAlertRepository):
 
     async def create(self, alert: SLAAlert) -> SLAAlert:
         """Create new alert."""
-        from sla.infrastructure.models import AlertModel
+        from src.sla.infrastructure.models import AlertModel
 
         model = AlertModel(
             id=uuid4() if not alert.id else UUID(alert.id),
@@ -187,7 +187,7 @@ class SQLAlchemyAlertRepository(ISLAAlertRepository):
 
     async def get_pending_alerts(self, ticket_id: Optional[str] = None) -> List[SLAAlert]:
         """Get alerts that haven't been sent yet."""
-        from sla.infrastructure.models import AlertModel
+        from src.sla.infrastructure.models import AlertModel
 
         stmt = select(AlertModel).where(AlertModel.notification_sent == False)
 
@@ -224,7 +224,7 @@ class SQLAlchemyAlertRepository(ISLAAlertRepository):
 
     async def mark_sent(self, alert_id: str, sent_at: datetime) -> None:
         """Mark alert as sent."""
-        from sla.infrastructure.models import AlertModel
+        from src.sla.infrastructure.models import AlertModel
 
         try:
             alert_uuid = UUID(alert_id)

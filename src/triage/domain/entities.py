@@ -13,7 +13,7 @@ from datetime import datetime
 from typing import Optional, List
 from enum import Enum
 
-from config import ProductCategory, UrgencyLevel
+from src.config import ProductCategory, UrgencyLevel
 
 
 @dataclass

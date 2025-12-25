@@ -11,7 +11,7 @@ Contains:
 This layer is framework-agnostic and contains pure business logic.
 """
 
-from triage.domain.entities import (
+from src.triage.domain.entities import (
     ClassificationResult,
     TriageTicket,
     Citation,

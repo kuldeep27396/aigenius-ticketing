@@ -18,7 +18,7 @@ from sqlalchemy.ext.asyncio import (
 )
 from sqlalchemy.orm import DeclarativeBase, sessionmaker
 
-from config import settings
+from src.config import settings
 
 
 class Base(DeclarativeBase):

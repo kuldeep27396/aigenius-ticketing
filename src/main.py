@@ -24,31 +24,31 @@ from fastapi import FastAPI, Request
 from fastapi.middleware.cors import CORSMiddleware
 
 # Configuration and Core
-from config import settings
-from core import ApplicationException
+from src.config import settings
+from src.core import ApplicationException
 
 # Infrastructure
-from infrastructure.database import init_database, close_database, create_tables
-from infrastructure.llm import ZAIILLMClient
-from infrastructure.vectorstore import MilvusVectorStore
+from src.infrastructure.database import init_database, close_database, create_tables
+from src.infrastructure.llm import ZAIILLMClient
+from src.infrastructure.vectorstore import MilvusVectorStore
 
 # SLA Module - External services
-from sla.infrastructure.external import (
+from src.sla.infrastructure.external import (
     SLAConfigManager, SlackClient, SLAScheduler
 )
-from sla.infrastructure.repositories import SQLAlchemyTicketRepository
-from sla.application import SLAService
+from src.sla.infrastructure.repositories import SQLAlchemyTicketRepository
+from src.sla.application import SLAService
 
 # SLA Services for evaluation
-from sla.services import SLAEvaluator
+from src.sla.services import SLAEvaluator
 
 # Module Routers
-from sla.interfaces import sla_router
-from triage.interfaces import triage_router
+from src.sla.interfaces import sla_router
+from src.triage.interfaces import triage_router
 
 # Logging
-from shared.infrastructure.logging import setup_logging, get_logger
-from shared.infrastructure.grafana import init_grafana_exporter
+from src.shared.infrastructure.logging import setup_logging, get_logger
+from src.shared.infrastructure.grafana import init_grafana_exporter
 
 logger = get_logger(__name__)
 
@@ -120,7 +120,7 @@ async def lifespan(app: FastAPI) -> AsyncGenerator:
 
         async def sla_evaluation_job():
             """Background SLA evaluation job."""
-            from infrastructure.database import get_session_context
+            from src.infrastructure.database import get_session_context
             async with get_session_context() as session:
                 await sla_evaluator.evaluate(session)
 
@@ -154,8 +154,8 @@ async def lifespan(app: FastAPI) -> AsyncGenerator:
         logger.warning(f"Grafana exporter initialization failed: {e}")
 
     # Initialize classification service
-    from triage.application import ClassificationService
-    from triage.infrastructure import LLMClientAdapter
+    from src.triage.application import ClassificationService
+    from src.triage.infrastructure import LLMClientAdapter
     if llm_client or settings.zai_api_key:
         llm_adapter = LLMClientAdapter(settings.zai_api_key)
         classification_service = ClassificationService(llm_adapter)
@@ -300,7 +300,7 @@ app.add_middleware(
 )
 
 # === Custom Middleware (from shared) ===
-from shared.api.middleware import (
+from src.shared.api.middleware import (
     CorrelationIDMiddleware,
     MetricsMiddleware,
     LoggingMiddleware,
@@ -429,7 +429,7 @@ async def test_grafana_metrics(request: Request):
 
     Useful for verifying Grafana OTLP integration is working.
     """
-    from shared.infrastructure.grafana import get_grafana_exporter
+    from src.shared.infrastructure.grafana import get_grafana_exporter
 
     exporter = get_grafana_exporter()
 

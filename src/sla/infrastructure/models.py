@@ -15,8 +15,8 @@ from uuid import UUID, uuid4
 from sqlalchemy import String, DateTime, Boolean, Integer, Float, Text, Uuid
 from sqlalchemy.orm import Mapped, mapped_column
 
-from infrastructure.database import Base
-from config import Priority, CustomerTier, TicketStatus, SLAType, SLAState, AlertType
+from src.infrastructure.database import Base
+from src.config import Priority, CustomerTier, TicketStatus, SLAType, SLAState, AlertType
 
 
 class TicketModel(Base):

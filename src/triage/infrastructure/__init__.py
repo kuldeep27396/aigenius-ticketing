@@ -10,12 +10,12 @@ Contains:
 - External: External service adapters (LLM, Vector Store)
 """
 
-from triage.infrastructure.models import TriageTicketModel, ClassificationModel
-from triage.infrastructure.repositories import (
+from src.triage.infrastructure.models import TriageTicketModel, ClassificationModel
+from src.triage.infrastructure.repositories import (
     SQLAlchemyTriageTicketRepository,
     SQLAlchemyClassificationRepository
 )
-from triage.infrastructure.external import (
+from src.triage.infrastructure.external import (
     LLMClientAdapter,
     VectorStoreAdapter,
     DocumentIngester

@@ -11,7 +11,7 @@ from pydantic import BaseModel, Field, field_validator
 from typing import List, Optional, Dict, Any, Literal
 from datetime import datetime
 
-from triage.domain import Citation
+from src.triage.domain import Citation
 
 
 # ========== Type Aliases for Literals ==========
@@ -119,7 +119,7 @@ class TriageTicketDTO(BaseModel):
 
     def to_domain(self) -> Any:
         """Convert to domain entity."""
-        from triage.domain import TriageTicket
+        from src.triage.domain import TriageTicket
         return TriageTicket(
             id=self.id,
             external_id=self.external_id,

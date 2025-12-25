@@ -13,7 +13,7 @@ from datetime import datetime, timezone, timedelta
 from typing import Optional, List
 from enum import Enum
 
-from config import (
+from src.config import (
     SLAType, SLAState, AlertType,
     Priority, CustomerTier, TicketStatus
 )

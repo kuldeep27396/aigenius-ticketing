@@ -15,8 +15,8 @@ from typing import List
 from fastapi import APIRouter, Depends, HTTPException, Request, status
 from sqlalchemy.ext.asyncio import AsyncSession
 
-from infrastructure.database import get_session
-from triage.application import (
+from src.infrastructure.database import get_session
+from src.triage.application import (
     ClassificationService, RAGService,
     ClassifyRequest, ClassificationResponse,
     RespondRequest, RespondResponse,
@@ -24,15 +24,15 @@ from triage.application import (
     StatsResponse, TriageTicketDTO,
     ITriageTicketRepository, IClassificationRepository
 )
-from triage.infrastructure import (
+from src.triage.infrastructure import (
     SQLAlchemyTriageTicketRepository,
     SQLAlchemyClassificationRepository,
     LLMClientAdapter,
     VectorStoreAdapter,
     DocumentIngester
 )
-from shared.infrastructure.logging import get_logger
-from config import settings
+from src.shared.infrastructure.logging import get_logger
+from src.config import settings
 
 logger = get_logger(__name__)
 router = APIRouter(prefix="/triage", tags=["Ticket Triage"])
@@ -269,7 +269,7 @@ async def classify_ticket(
         }
     )
 
-    from triage.application.dto import ClassificationInfo
+    from src.triage.application.dto import ClassificationInfo
     return ClassificationResponse(
         ticket_id=ticket_uuid,
         classification=ClassificationInfo(
@@ -348,7 +348,7 @@ async def generate_response(
         result = await rag_service.generate_response(payload.query)
 
         # Convert citations
-        from triage.application.dto import CitationInfo
+        from src.triage.application.dto import CitationInfo
         citations = [
             CitationInfo(
                 index=c.index,
@@ -471,7 +471,7 @@ async def get_stats(
     vector_store = Depends(get_vector_store)
 ):
     from sqlalchemy import func, select
-    from triage.infrastructure.models import ClassificationModel
+    from src.triage.infrastructure.models import ClassificationModel
 
     # Get classification counts
     stmt = select(func.count(ClassificationModel.id))

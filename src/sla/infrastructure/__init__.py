@@ -8,8 +8,8 @@ Infrastructure implementations for SLA monitoring:
 - External: External service integrations (Slack, config watcher, scheduler)
 """
 
-from sla.infrastructure.models import TicketModel, AlertModel
-from sla.infrastructure.repositories import (
+from src.sla.infrastructure.models import TicketModel, AlertModel
+from src.sla.infrastructure.repositories import (
     SQLAlchemyTicketRepository,
     SQLAlchemyAlertRepository,
     YAMLConfigProvider

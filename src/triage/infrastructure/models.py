@@ -12,8 +12,8 @@ from uuid import UUID, uuid4
 from sqlalchemy import String, DateTime, Integer, Float, Text, Uuid, ForeignKey
 from sqlalchemy.orm import Mapped, mapped_column
 
-from infrastructure.database import Base
-from config import ProductCategory, UrgencyLevel
+from src.infrastructure.database import Base
+from src.config import ProductCategory, UrgencyLevel
 
 
 class TriageTicketModel(Base):

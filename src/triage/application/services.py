@@ -13,12 +13,12 @@ from typing import Optional, List, Any
 from abc import ABC, abstractmethod
 from datetime import datetime, timezone
 
-from triage.domain import (
+from src.triage.domain import (
     ClassificationResult, TriageTicket, RAGResult, Citation,
     ClassificationPromptBuilder
 )
-from config import ProductCategory, UrgencyLevel
-from core import LLMException, VectorStoreException
+from src.config import ProductCategory, UrgencyLevel
+from src.core import LLMException, VectorStoreException
 
 
 # ========== Repository Interfaces ==========

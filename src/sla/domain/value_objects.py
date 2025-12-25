@@ -14,7 +14,7 @@ from typing import Dict, List, Optional
 
 from pydantic import BaseModel, Field, field_validator
 
-from config import (
+from src.config import (
     Priority, CustomerTier, SLAType, SLAState, AlertType,
     VALID_PRIORITIES, VALID_CUSTOMER_TIERS, VALID_SLA_TYPES
 )

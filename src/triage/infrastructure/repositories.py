@@ -12,9 +12,9 @@ from uuid import UUID, uuid4
 from sqlalchemy import select, func
 from sqlalchemy.ext.asyncio import AsyncSession
 
-from triage.application import ITriageTicketRepository, IClassificationRepository, TriageTicketDTO
-from triage.domain import ClassificationResult
-from core import RepositoryException
+from src.triage.application import ITriageTicketRepository, IClassificationRepository, TriageTicketDTO
+from src.triage.domain import ClassificationResult
+from src.core import RepositoryException
 
 
 class SQLAlchemyTriageTicketRepository(ITriageTicketRepository):
@@ -25,7 +25,7 @@ class SQLAlchemyTriageTicketRepository(ITriageTicketRepository):
 
     async def get_by_external_id(self, external_id: str) -> Optional[Any]:
         """Get ticket by external ID."""
-        from triage.infrastructure.models import TriageTicketModel
+        from src.triage.infrastructure.models import TriageTicketModel
 
         stmt = select(TriageTicketModel).where(
             TriageTicketModel.external_id == external_id
@@ -35,7 +35,7 @@ class SQLAlchemyTriageTicketRepository(ITriageTicketRepository):
 
     async def get_by_id(self, ticket_id: str) -> Optional[Any]:
         """Get ticket by internal ID."""
-        from triage.infrastructure.models import TriageTicketModel
+        from src.triage.infrastructure.models import TriageTicketModel
 
         try:
             ticket_uuid = UUID(ticket_id)
@@ -48,7 +48,7 @@ class SQLAlchemyTriageTicketRepository(ITriageTicketRepository):
 
     async def create(self, ticket_dto: TriageTicketDTO) -> Any:
         """Create new ticket."""
-        from triage.infrastructure.models import TriageTicketModel
+        from src.triage.infrastructure.models import TriageTicketModel
 
         model = TriageTicketModel(
             id=uuid4(),
@@ -66,7 +66,7 @@ class SQLAlchemyTriageTicketRepository(ITriageTicketRepository):
 
     async def exists_by_external_id(self, external_id: str) -> bool:
         """Check if ticket exists by external ID."""
-        from triage.infrastructure.models import TriageTicketModel
+        from src.triage.infrastructure.models import TriageTicketModel
 
         stmt = select(TriageTicketModel.id).where(
             TriageTicketModel.external_id == external_id
@@ -83,7 +83,7 @@ class SQLAlchemyClassificationRepository(IClassificationRepository):
 
     async def create(self, result: ClassificationResult, ticket_id: str) -> Any:
         """Store classification result."""
-        from triage.infrastructure.models import ClassificationModel
+        from src.triage.infrastructure.models import ClassificationModel
 
         try:
             ticket_uuid = UUID(ticket_id)

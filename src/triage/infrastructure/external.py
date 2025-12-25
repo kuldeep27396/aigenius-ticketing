@@ -11,10 +11,10 @@ external service implementations.
 from typing import List, Any
 from dataclasses import dataclass
 
-from triage.application import IVectorStore, ILLMClient
-from infrastructure.llm import ZAIILLMClient, EmbeddingResult, ChatCompletionResult
-from infrastructure.vectorstore import MilvusVectorStore, SearchResult, Document
-from core import LLMException, VectorStoreException
+from src.triage.application import IVectorStore, ILLMClient
+from src.infrastructure.llm import ZAIILLMClient, EmbeddingResult, ChatCompletionResult
+from src.infrastructure.vectorstore import MilvusVectorStore, SearchResult, Document
+from src.core import LLMException, VectorStoreException
 
 
 class LLMClientAdapter(ILLMClient):
@@ -71,8 +71,8 @@ class VectorStoreAdapter(IVectorStore):
         Returns:
             List of search result dicts with content and metadata
         """
-        from infrastructure.llm import ZAIILLMClient
-        from config import settings
+        from src.infrastructure.llm import ZAIILLMClient
+        from src.config import settings
 
         # Generate query embedding
         llm_client = ZAIILLMClient(settings.zai_api_key)
@@ -160,8 +160,8 @@ class DocumentIngester:
             Ingestion statistics
         """
         import uuid
-        from infrastructure.llm import ZAIILLMClient
-        from config import settings
+        from src.infrastructure.llm import ZAIILLMClient
+        from src.config import settings
 
         # Chunk the text
         chunks = self._chunk_text(text, chunk_size, chunk_overlap)

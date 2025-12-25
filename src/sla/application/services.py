@@ -14,11 +14,11 @@ from datetime import datetime, timezone
 from typing import List, Optional, Any
 from abc import ABC, abstractmethod
 
-from sla.domain import (
+from src.sla.domain import (
     Ticket, SLAMetrics, SLAAlert,
     SLACalculator, SLAConfig
 )
-from config import Priority, CustomerTier, SLAType, SLAState, TicketStatus
+from src.config import Priority, CustomerTier, SLAType, SLAState, TicketStatus
 
 
 # ========== Repository Interfaces (Dependency Inversion) ==========
@@ -316,7 +316,7 @@ class SLAEvaluationService:
     ) -> Optional[SLAAlert]:
         """Determine if alert should be created."""
         from uuid import uuid4
-        from config import AlertType
+        from src.config import AlertType
 
         if state == SLAState.MET:
             return None

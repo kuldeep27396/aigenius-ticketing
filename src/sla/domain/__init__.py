@@ -12,8 +12,8 @@ Contains:
 This layer has no dependencies on infrastructure - pure Python business logic.
 """
 
-from sla.domain.entities import Ticket, SLAMetrics, SLAAlert
-from sla.domain.value_objects import (
+from src.sla.domain.entities import Ticket, SLAMetrics, SLAAlert
+from src.sla.domain.value_objects import (
     SLACalculator,
     SLAConfig,
     EscalationLevelConfig,

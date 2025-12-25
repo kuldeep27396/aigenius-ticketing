@@ -9,7 +9,7 @@ Contains:
 - DTOs: Data transfer objects for API serialization
 """
 
-from triage.application.dto import (
+from src.triage.application.dto import (
     ClassifyRequest,
     RespondRequest,
     IngestDocumentsRequest,
@@ -21,7 +21,7 @@ from triage.application.dto import (
     ClassificationInfo,
     CitationInfo
 )
-from triage.application.services import (
+from src.triage.application.services import (
     ClassificationService,
     RAGService,
     ITriageTicketRepository,

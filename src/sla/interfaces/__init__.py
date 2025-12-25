@@ -11,6 +11,6 @@ This is the outermost layer - handles HTTP requests/responses and
 delegates to application services.
 """
 
-from sla.interfaces.controllers import sla_router
+from src.sla.interfaces.controllers import sla_router
 
 __all__ = ["sla_router"]

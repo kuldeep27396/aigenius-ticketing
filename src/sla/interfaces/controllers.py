@@ -14,8 +14,8 @@ from datetime import datetime, timezone
 from fastapi import APIRouter, Depends, HTTPException, Query, status
 from sqlalchemy.ext.asyncio import AsyncSession
 
-from infrastructure.database import get_session
-from sla.application import (
+from src.infrastructure.database import get_session
+from src.sla.application import (
     SLAService,
     TicketIngestRequest, TicketCreateDTO,
     DashboardQueryDTO, TicketSLAResponse,
@@ -23,14 +23,14 @@ from sla.application import (
     IngestResponse, TicketEntityDTO,
     SLAStatusResponse, AlertResponse
 )
-from sla.infrastructure import (
+from src.sla.infrastructure import (
     SQLAlchemyTicketRepository,
     SQLAlchemyAlertRepository,
     YAMLConfigProvider
 )
-from config import Priority, CustomerTier, TicketStatus, SLAState
+from src.config import Priority, CustomerTier, TicketStatus, SLAState
 
-from shared.infrastructure.logging import get_logger
+from src.shared.infrastructure.logging import get_logger
 
 logger = get_logger(__name__)
 router = APIRouter(prefix="/sla", tags=["SLA Monitoring"])
@@ -118,7 +118,7 @@ async def get_evaluation_service(
     alert_repo = SQLAlchemyAlertRepository(session)
     config_provider = YAMLConfigProvider("sla_config.yaml")
 
-    from sla.application import SLAEvaluationService
+    from src.sla.application import SLAEvaluationService
     return SLAEvaluationService(ticket_repo, alert_repo, config_provider)
 
 

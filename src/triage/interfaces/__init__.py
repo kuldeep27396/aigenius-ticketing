@@ -8,6 +8,6 @@ Contains:
 - Controllers: FastAPI route handlers
 """
 
-from triage.interfaces.controllers import triage_router
+from src.triage.interfaces.controllers import triage_router
 
 __all__ = ["triage_router"]

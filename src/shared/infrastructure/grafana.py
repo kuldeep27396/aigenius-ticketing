@@ -18,8 +18,8 @@ from datetime import datetime, timezone
 
 import httpx
 
-from config import settings
-from shared.infrastructure.logging import get_logger
+from src.config import settings
+from src.shared.infrastructure.logging import get_logger
 
 logger = get_logger(__name__)
 

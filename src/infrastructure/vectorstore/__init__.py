@@ -15,8 +15,8 @@ from dataclasses import dataclass
 
 from pymilvus import MilvusClient
 
-from config import settings
-from core import VectorStoreException
+from src.config import settings
+from src.core import VectorStoreException
 
 
 @dataclass

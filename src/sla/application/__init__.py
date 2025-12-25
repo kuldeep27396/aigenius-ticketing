@@ -12,7 +12,7 @@ This layer depends on the domain layer and repository interfaces,
 but not on concrete infrastructure implementations.
 """
 
-from sla.application.dto import (
+from src.sla.application.dto import (
     TicketIngestRequest,
     TicketCreateDTO,
     TicketUpdateDTO,
@@ -25,7 +25,7 @@ from sla.application.dto import (
     IngestResponse,
     TicketEntityDTO,
 )
-from sla.application.services import (
+from src.sla.application.services import (
     SLAService,
     SLAEvaluationService,
     ITicketRepository,

@@ -8,7 +8,7 @@ This module contains framework-agnostic code that defines the fundamental
 building blocks of the system.
 """
 
-from core.exceptions import (
+from src.core.exceptions import (
     ApplicationException,
     DomainException,
     RepositoryException,

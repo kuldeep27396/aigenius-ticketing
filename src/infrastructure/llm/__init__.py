@@ -15,9 +15,9 @@ from abc import ABC, abstractmethod
 
 from zai import ZaiClient
 
-from config import settings
-from core import LLMException, ConfigurationException
-from shared.infrastructure.grafana import get_grafana_exporter
+from src.config import settings
+from src.core import LLMException, ConfigurationException
+from src.shared.infrastructure.grafana import get_grafana_exporter
 
 
 class EmbeddingResult:

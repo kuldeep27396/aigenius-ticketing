@@ -182,8 +182,8 @@ class TicketEntityDTO(BaseModel):
 
     def to_domain(self) -> Any:
         """Convert to domain entity."""
-        from sla.domain import Ticket
-        from config import Priority, CustomerTier, TicketStatus
+        from src.sla.domain import Ticket
+        from src.config import Priority, CustomerTier, TicketStatus
 
         # Convert string to enum
         priority_map = {
