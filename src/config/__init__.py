@@ -140,7 +140,7 @@ class Settings(BaseSettings):
         default=1000,
         description="Default max tokens for LLM generation",
         ge=1,
-        le=8000
+        le=32768  # Groq Llama 3.3 supports up to 128k
     )
 
     # ========== CORS ==========
