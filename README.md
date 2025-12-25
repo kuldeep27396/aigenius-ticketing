@@ -172,9 +172,10 @@ aigenius-ticketing/
 │   ├── shared/                 # Shared infrastructure
 │   ├── sla/                    # SLA Monitoring module
 │   └── triage/                 # AI Classification & RAG module
-├── k8s/                        # Kubernetes manifests
 ├── docker-compose.yaml         # Local development
+├── Dockerfile                  # Production deployment
 ├── pyproject.toml              # Dependencies (UV)
+├── requirements.txt            # Dependencies (pip/Render)
 ├── .env                        # Environment variables
 ├── sla_config.yaml             # SLA configuration
 ├── API_TESTING.md              # API Testing Guide
@@ -182,8 +183,6 @@ aigenius-ticketing/
 ```
 
 ## 📈 Metrics & Monitoring
-
-![Grafana Dashboard](docs/images/grafana-dashboard.png)
 
 - Structured JSON logging with correlation IDs
 - Grafana OTLP metrics integration
